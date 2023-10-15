@@ -56,6 +56,11 @@ protected:
 	void TurnAtPate(float rate);
 	void LookAtPate(float rate);
 	
-	
+	void Interact();
+	void InteractCheck();
+
+	FHitResult InteractHitResult;
+	FVector ViewVector;
+	FRotator ViewRotation;
 
 };

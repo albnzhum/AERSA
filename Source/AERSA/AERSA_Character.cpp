@@ -6,6 +6,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "Inventory/Item.h"
 
 // Sets default values
 AAERSA_Character::AAERSA_Character()
@@ -61,6 +62,7 @@ void AAERSA_Character::BeginPlay()
 void AAERSA_Character::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	InteractCheck();
 
 }
 
@@ -79,6 +81,8 @@ void AAERSA_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	
 	PlayerInputComponent->BindAxis("Turn", this, &AAERSA_Character::TurnAtPate);
 	PlayerInputComponent->BindAxis("LookUp", this, &AAERSA_Character::LookAtPate);
+
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AAERSA_Character::Interact);
 
 }
 
@@ -112,4 +116,23 @@ void AAERSA_Character::LookAtPate(float rate)
 {
 	AddControllerPitchInput(rate * LookUpRate * GetWorld()->GetDeltaSeconds());
 }
+
+void AAERSA_Character::Interact()
+{
+	if (Cast<AItem>(InteractHitResult.GetActor()))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("123"))
+	}
+}
+
+void AAERSA_Character::InteractCheck()
+{
+	Cast<APlayerController>(GetController())->GetPlayerViewPoint(ViewVector, ViewRotation);
+	FVector VecDirection = ViewRotation.Vector() * 1000.f;
+	FVector InteractEnd = ViewVector + VecDirection;
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+	GetWorld()->LineTraceSingleByChannel(InteractHitResult, ViewVector, InteractEnd, ECollisionChannel::ECC_GameTraceChannel1, QueryParams);
+}
+
 
